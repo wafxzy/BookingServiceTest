@@ -1,9 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36414.22 d17.14
+VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingService", "BookingService.csproj", "{F2E90414-92AB-44F7-B08D-8BD91C536B80}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8CAEEF20-CF74-478F-B14F-F0FA4969BF7B} = {8CAEEF20-CF74-478F-B14F-F0FA4969BF7B}
+		{B0BBA1CD-B875-43DB-93A9-67A5A0761941} = {B0BBA1CD-B875-43DB-93A9-67A5A0761941}
+		{F52DD139-4F64-40BE-A8DD-7AA129023975} = {F52DD139-4F64-40BE-A8DD-7AA129023975}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingService.Common", "..\BookingService.Common\BookingService.Common.csproj", "{8CAEEF20-CF74-478F-B14F-F0FA4969BF7B}"
 EndProject

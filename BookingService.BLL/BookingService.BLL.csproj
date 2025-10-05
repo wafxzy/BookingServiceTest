@@ -6,4 +6,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\Interfaces\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BookingService.Common\BookingService.Common.csproj" />
+    <ProjectReference Include="..\BookingService.DAL\BookingService.DAL.csproj" />
+  </ItemGroup>
+
 </Project>
