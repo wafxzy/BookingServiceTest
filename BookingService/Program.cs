@@ -1,12 +1,8 @@
 using BookingService.Common.Entities;
 using BookingService.DAL.Data;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using BookingService.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +31,9 @@ builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Repository registrations
+builder.Services.AddServiceExtensions();
 
 // CORS
 builder.Services.AddCors(options =>
