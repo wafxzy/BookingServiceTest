@@ -1,0 +1,30 @@
+<nav class="bg-blue-600 text-white shadow-lg">
+  <div class="container mx-auto px-4">
+    <div class="flex justify-between items-center h-16">
+      <div class="flex items-center space-x-8">
+        <a routerLink="/" class="text-2xl font-bold"> Hotel Booking</a>
+        <div class="hidden md:flex space-x-4">
+          <a routerLink="/hotels" class="hover:bg-blue-700 px-3 py-2 rounded transition">Отели</a>
+          @if (authService.isAuthenticated()) {
+            <a routerLink="/my-bookings" class="hover:bg-blue-700 px-3 py-2 rounded transition">Мои бронирования</a>
+          }
+          @if (authService.isAdmin()) {
+            <a routerLink="/admin" class="hover:bg-blue-700 px-3 py-2 rounded transition">Админ панель</a>
+          }
+        </div>
+      </div>
+      <div class="flex items-center space-x-4">
+        @if (authService.currentUser$ | async; as user) {
+          <span class="text-sm">{{user.firstName}} {{user.lastName}}</span>
+          <button (click)="logout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded transition">Выйти</button>
+        } @else {
+          <a routerLink="/login" class="hover:bg-blue-700 px-4 py-2 rounded transition">Войти</a>
+          <a routerLink="/register" class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded transition">Регистрация</a>
+        }
+      </div>
+    </div>
+  </div>
+</nav>
+<main class="min-h-screen bg-gray-100">
+  <router-outlet></router-outlet>
+</main>
