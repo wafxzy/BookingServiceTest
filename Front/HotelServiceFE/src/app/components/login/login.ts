@@ -56,7 +56,7 @@ export class Login {
 
   fillTestAdmin(): void {
     this.loginData = {
-      email: 'admin1g.com',
+      email: 'admin@g.com',
       password: 'Admin123!'
     };
   }

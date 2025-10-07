@@ -127,4 +127,6 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+app.Urls.Add("http://*:5009");
+
 app.Run();

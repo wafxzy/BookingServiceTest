@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  # База данных MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: booking-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: HotelBookingDb
+      MYSQL_USER: hoteluser
+      MYSQL_PASSWORD: hotelpassword
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    networks:
+      - booking-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Бэкенд API
+  backend:
+    build:
+      context: .
+      dockerfile: BookingService/Dockerfile
+    container_name: booking-backend
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=server=mysql;port=3306;database=HotelBookingDb;uid=hoteluser;password=hotelpassword;
+      - JWT__SecretKey=your-super-secret-jwt-key-here-make-it-long-and-secure
+      - JWT__ValidIssuer=BookingService
+      - JWT__ValidAudience=BookingServiceUsers
+    ports:
+      - "5000:5009"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - booking-network
+    volumes:
+      - ./certs:/https:ro
+    restart: unless-stopped
+
+networks:
+  booking-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
