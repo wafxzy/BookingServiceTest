@@ -1,1 +1,81 @@
-<p>my-bookings works!</p>
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-4xl font-bold text-gray-900">Мои бронирования</h1>
+    <button (click)="refreshBookings()" 
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+      Обновить
+    </button>
+  </div>
+
+  @if (isLoading) {
+    <div class="text-center py-12">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <p class="mt-4 text-gray-600">Загрузка...</p>
+    </div>
+  }
+
+  @if (errorMessage) {
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+      {{ errorMessage }}
+    </div>
+  }
+
+  @if (!isLoading && bookings.length === 0) {
+    <div class="text-center py-12 bg-white rounded-lg shadow">
+      <p class="text-xl text-gray-600 mb-4">У вас пока нет бронирований</p>
+      <a routerLink="/hotels" class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+        Найти отель
+      </a>
+    </div>
+  }
+
+  <div class="space-y-4">
+    @for (booking of bookings; track booking.id) {
+      <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
+        <div class="p-6">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h3 class="text-2xl font-bold text-gray-900">{{ booking.hotelName }}</h3>
+              <p class="text-gray-600">Номер: {{ booking.roomNumber }}</p>
+            </div>
+            <span 
+              class="px-4 py-2 rounded-full text-sm font-semibold"
+              [class]="getStatusClass(booking.status)"
+            >
+              {{ getStatusText(booking.status) }}
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div class="bg-gray-50 p-4 rounded">
+              <p class="text-sm text-gray-600 mb-1">Заезд</p>
+              <p class="text-lg font-semibold">{{ booking.checkInDate | date: 'dd.MM.yyyy' }}</p>
+            </div>
+            <div class="bg-gray-50 p-4 rounded">
+              <p class="text-sm text-gray-600 mb-1">Выезд</p>
+              <p class="text-lg font-semibold">{{ booking.checkOutDate | date: 'dd.MM.yyyy' }}</p>
+            </div>
+            <div class="bg-gray-50 p-4 rounded">
+              <p class="text-sm text-gray-600 mb-1">Стоимость</p>
+              <p class="text-2xl font-bold text-blue-600">{{ booking.totalPrice }} ₴</p>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center pt-4 border-t">
+            <p class="text-sm text-gray-500">
+              Создано: {{ booking.createdAt | date: 'dd.MM.yyyy HH:mm' }}
+            </p>
+            @if (booking.status === 0 || booking.status === 1) {
+              <button
+                (click)="cancelBooking(booking.id)"
+                class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+              >
+                Отменить
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
