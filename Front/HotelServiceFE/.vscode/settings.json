@@ -1,0 +1,22 @@
+{
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  "less.lint.unknownAtRules": "ignore",
+  "css.customData": [
+    ".vscode/tailwind.json"
+  ],
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "tailwindCSS.includeLanguages": {
+    "html": "html",
+    "javascript": "javascript",
+    "typescript": "typescript"
+  },
+  "tailwindCSS.experimental.classRegex": [
+    "class[:]\\s*['\"]([^'\"]*)['\"]"
+  ]
+}
