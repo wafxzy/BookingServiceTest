@@ -16,6 +16,16 @@ namespace BookingService.DAL.Repositories
         {
         }
 
+        public override async Task<IEnumerable<Booking>> GetAllAsync()
+        {
+            return await _dbSet
+                .Include(b => b.Room)
+                .ThenInclude(r => r.Hotel)
+                .Include(b => b.User)
+                .OrderByDescending(b => b.CreatedAt)
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<Booking>> GetUserBookingsAsync(string userId)
         {
             return await _dbSet
@@ -48,16 +58,6 @@ namespace BookingService.DAL.Repositories
                 .FirstOrDefaultAsync();
 
             return conflictingBooking == null;
-        }
-
-        public override async Task<IEnumerable<Booking>> GetAllAsync()
-        {
-            return await _dbSet
-                .Include(b => b.Room)
-                .ThenInclude(r => r.Hotel)
-                .Include(b => b.User)
-                .OrderByDescending(b => b.CreatedAt)
-                .ToListAsync();
         }
     }
 }

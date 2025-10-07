@@ -111,5 +111,43 @@ namespace BookingService.BLL.Services
                 }).ToList()
             };
         }
+        public async Task<IEnumerable<HotelDto>> GetAvailableHotelsByCityAsync(string city, DateTime? checkIn = null, DateTime? checkOut = null)
+        {
+            var hotels = await _hotelRepository.GetHotelsByCityAsync(city);
+
+            if (!checkIn.HasValue || !checkOut.HasValue)
+            {
+                return hotels.Select(MapToDtoWithRooms);
+            }
+
+            var availableHotels = new List<Hotel>();
+
+            foreach (var hotel in hotels)
+            {
+                var availableRooms = hotel.Rooms.Where(room =>
+                    room.IsAvailable &&
+                    !room.Bookings.Any(booking =>
+                        booking.Status != BookingStatus.Cancelled &&
+                        booking.CheckInDate < checkOut &&
+                        booking.CheckOutDate > checkIn)).ToList();
+
+                if (availableRooms.Any())
+                {
+                    var hotelWithAvailableRooms = new Hotel
+                    {
+                        Id = hotel.Id,
+                        Name = hotel.Name,
+                        Address = hotel.Address,
+                        City = hotel.City,
+                        Description = hotel.Description,
+                        CreatedAt = hotel.CreatedAt,
+                        Rooms = availableRooms
+                    };
+                    availableHotels.Add(hotelWithAvailableRooms);
+                }
+            }
+
+            return availableHotels.Select(MapToDtoWithRooms);
+        }
     }
 }

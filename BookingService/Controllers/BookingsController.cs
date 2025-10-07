@@ -1,8 +1,10 @@
 ﻿using BookingService.BLL.Services.Interfaces;
 using BookingService.Common.DTOs;
 using BookingService.Common.DTOs.CrudDTOs;
+using BookingService.Common.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -14,10 +16,12 @@ namespace BookingService.Controllers
     public class BookingsController : ControllerBase
     {
         private readonly IBookingService _bookingService;
+        private readonly UserManager<User> _userManager;
 
-        public BookingsController(IBookingService bookingService)
+        public BookingsController(IBookingService bookingService, UserManager<User> userManager)
         {
             _bookingService = bookingService;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -35,7 +39,7 @@ namespace BookingService.Controllers
             if (booking == null)
                 return NotFound();
 
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = await GetCurrentUserIdAsync();
             var userRoles = User.FindAll(ClaimTypes.Role).Select(c => c.Value);
 
             if (booking.UserId != userId && !userRoles.Contains("Admin"))
@@ -47,7 +51,7 @@ namespace BookingService.Controllers
         [HttpGet("my-bookings")]
         public async Task<ActionResult<IEnumerable<BookingDto>>> GetMyBookings()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = await GetCurrentUserIdAsync();
             if (string.IsNullOrEmpty(userId))
                 return BadRequest("User ID not found");
 
@@ -61,9 +65,11 @@ namespace BookingService.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = await GetCurrentUserIdAsync();
             if (string.IsNullOrEmpty(userId))
                 return BadRequest("User ID not found");
+
+            Console.WriteLine($"Controller: resolved userId: '{userId}'");
 
             if (createBookingDto.CheckInDate >= createBookingDto.CheckOutDate)
                 return BadRequest("Check-in date must be before check-out date");
@@ -86,6 +92,33 @@ namespace BookingService.Controllers
             }
         }
 
+        private async Task<string?> GetCurrentUserIdAsync()
+        {
+            var userIdFromToken = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!string.IsNullOrEmpty(userIdFromToken))
+            {
+                var userById = await _userManager.FindByIdAsync(userIdFromToken);
+                if (userById != null)
+                {
+                    Console.WriteLine($"Found user by ID from token: {userIdFromToken}");
+                    return userIdFromToken;
+                }
+            }
+            var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+            if (!string.IsNullOrEmpty(userEmail))
+            {
+                var userByEmail = await _userManager.FindByEmailAsync(userEmail);
+                if (userByEmail != null)
+                {
+                    Console.WriteLine($"Found user by email, real ID: {userByEmail.Id}");
+                    return userByEmail.Id;
+                }
+            }
+
+            Console.WriteLine("User not found by ID or email");
+            return null;
+        }
+
         [HttpPut("{id}/status")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<BookingDto>> UpdateBookingStatus(int id, [FromBody] UpdateBookingStatusDto updateStatusDto)
@@ -103,7 +136,7 @@ namespace BookingService.Controllers
         [HttpPut("{id}/cancel")]
         public async Task<ActionResult> CancelBooking(int id)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = await GetCurrentUserIdAsync();
             if (string.IsNullOrEmpty(userId))
                 return BadRequest("User ID not found");
 

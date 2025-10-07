@@ -19,17 +19,15 @@ import { StatisticsService } from '../../services/statistics';
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css'
 })
+
 export class AdminDashboard implements OnInit {
-  BookingStatus = BookingStatus; // Экспорт для использования в шаблоне
+  BookingStatus = BookingStatus;
   activeTab: string = 'statistics';
   isLoading = false;
   errorMessage = '';
 
-  // Статистика
   statistics: Statistics | null = null;
-  recentBookings: Booking[] = [];
 
-  // Отели
   hotels: Hotel[] = [];
   selectedHotel: Hotel | null = null;
   hotelForm: CreateHotelRequest = {
@@ -40,7 +38,6 @@ export class AdminDashboard implements OnInit {
   };
   isEditingHotel = false;
 
-  // Комнаты
   rooms: Room[] = [];
   selectedRoom: Room | null = null;
   roomForm: CreateRoomRequest = {
@@ -61,7 +58,6 @@ export class AdminDashboard implements OnInit {
   };
   isEditingRoom = false;
 
-  // Бронирования
   allBookings: Booking[] = [];
   bookingFilter = {
     status: '',
@@ -87,6 +83,14 @@ export class AdminDashboard implements OnInit {
     this.loadStatistics();
     this.loadHotels();
     this.loadAllBookings();
+    
+    setInterval(() => {
+      if (this.activeTab === 'statistics') {
+        this.loadStatistics();
+      } else if (this.activeTab === 'bookings') {
+        this.loadAllBookings();
+      }
+    }, 30000);
   }
 
   setActiveTab(tab: string): void {
@@ -100,35 +104,32 @@ export class AdminDashboard implements OnInit {
     }
   }
 
-  // СТАТИСТИКА
   loadStatistics(): void {
     this.isLoading = true;
+    this.errorMessage = '';
     this.statisticsService.getStatistics().subscribe({
       next: (stats) => {
         this.statistics = stats;
         this.isLoading = false;
       },
       error: (error) => {
-        this.errorMessage = 'Ошибка загрузки статистики';
+        console.error('Ошибка загрузки статистики:', error);
+        this.errorMessage = `Ошибка загрузки статистики: ${error.status} ${error.statusText}`;
         this.isLoading = false;
-      }
-    });
-
-    // Загрузка последних бронирований через booking service
-    this.bookingService.getAllBookings().subscribe({
-      next: (bookings) => {
-        // Берем последние 5 бронирований, отсортированные по дате создания
-        this.recentBookings = bookings
-          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-          .slice(0, 5);
-      },
-      error: (error) => {
-        console.error('Ошибка загрузки последних бронирований:', error);
       }
     });
   }
 
-  // УПРАВЛЕНИЕ ОТЕЛЯМИ
+  refreshData(): void {
+    if (this.activeTab === 'statistics') {
+      this.loadStatistics();
+    } else if (this.activeTab === 'hotels') {
+      this.loadHotels();
+    } else if (this.activeTab === 'bookings') {
+      this.loadAllBookings();
+    }
+  }
+
   loadHotels(): void {
     this.isLoading = true;
     this.hotelService.getAllHotels().subscribe({
@@ -167,7 +168,6 @@ export class AdminDashboard implements OnInit {
 
   saveHotel(): void {
     if (this.selectedHotel) {
-      // Обновление
       this.hotelService.updateHotel(this.selectedHotel.id, this.hotelForm).subscribe({
         next: () => {
           this.loadHotels();
@@ -179,7 +179,6 @@ export class AdminDashboard implements OnInit {
         }
       });
     } else {
-      // Создание
       this.hotelService.createHotel(this.hotelForm).subscribe({
         next: () => {
           this.loadHotels();
@@ -212,7 +211,6 @@ export class AdminDashboard implements OnInit {
     this.selectedHotel = null;
   }
 
-  // УПРАВЛЕНИЕ КОМНАТАМИ
   loadRooms(hotelId: number): void {
     this.roomService.getRoomsByHotelId(hotelId).subscribe({
       next: (rooms) => {
@@ -252,7 +250,6 @@ export class AdminDashboard implements OnInit {
 
   saveRoom(): void {
     if (this.selectedRoom) {
-      // Обновление
       this.roomService.updateRoom(this.selectedRoom.id, this.roomUpdateForm).subscribe({
         next: () => {
           this.loadRooms(this.selectedRoom!.hotelId);
@@ -264,7 +261,6 @@ export class AdminDashboard implements OnInit {
         }
       });
     } else {
-      // Создание
       this.roomService.createRoom(this.roomForm).subscribe({
         next: () => {
           this.loadRooms(this.roomForm.hotelId);
@@ -297,7 +293,6 @@ export class AdminDashboard implements OnInit {
     this.selectedRoom = null;
   }
 
-  // УПРАВЛЕНИЕ БРОНИРОВАНИЯМИ
   loadAllBookings(): void {
     this.isLoading = true;
     this.bookingService.getAllBookings().subscribe({
@@ -334,7 +329,6 @@ export class AdminDashboard implements OnInit {
       if (this.bookingFilter.status && BookingStatus[booking.status] !== this.bookingFilter.status) {
         return false;
       }
-      // Фильтр по отелю убран так как в Booking нет прямой связи с отелем
       return true;
     });
   }

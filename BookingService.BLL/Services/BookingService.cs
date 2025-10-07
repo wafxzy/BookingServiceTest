@@ -37,6 +37,8 @@ namespace BookingService.BLL.Services
 
         public async Task<BookingDto> CreateBookingAsync(string userId, CreateBookingDto createBookingDto)
         {
+            Console.WriteLine($"Creating booking for userId: '{userId}'");
+            
             var room = await _roomRepository.GetRoomWithBookingsAsync(createBookingDto.RoomId);
             if (room == null)
                 throw new ArgumentException("Room not found", nameof(createBookingDto.RoomId));
@@ -65,6 +67,8 @@ namespace BookingService.BLL.Services
                 Status = BookingStatus.Pending,
                 CreatedAt = DateTime.UtcNow
             };
+
+            Console.WriteLine($"About to create booking with UserId: '{booking.UserId}', RoomId: {booking.RoomId}");
 
             var createdBooking = await _bookingRepository.AddAsync(booking);
 

@@ -81,5 +81,19 @@ namespace BookingService.Controllers
 
             return NoContent();
         }
+
+
+        [HttpGet("search-available")]
+        public async Task<ActionResult<IEnumerable<HotelDto>>> SearchAvailableHotels(
+            [FromQuery] string city,
+            [FromQuery] DateTime? checkIn = null,
+            [FromQuery] DateTime? checkOut = null)
+        {
+            if (string.IsNullOrWhiteSpace(city))
+                return BadRequest("City parameter is required");
+
+            var hotels = await _hotelService.GetAvailableHotelsByCityAsync(city, checkIn, checkOut);
+            return Ok(hotels);
+        }
     }
 }

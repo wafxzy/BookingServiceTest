@@ -23,14 +23,12 @@ export class HotelDetail implements OnInit {
   isLoadingRooms: boolean = false;
   errorMessage: string = '';
   
-  // Search parameters
   searchParams = {
     checkInDate: '',
     checkOutDate: '',
     guests: 2
   };
   
-  // Booking modal
   selectedRoom: Room | null = null;
   showBookingModal: boolean = false;
   isBooking: boolean = false;
@@ -196,7 +194,6 @@ export class HotelDetail implements OnInit {
         alert('Бронирование успешно создано!');
         this.closeBookingModal();
         this.isBooking = false;
-        // Перенаправляем на страницу бронирований
         this.router.navigate(['/my-bookings']);
       },
       error: (error) => {

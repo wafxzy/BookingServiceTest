@@ -1,4 +1,4 @@
-﻿using BookingService.BLL.Services;
+﻿using BookingService.BLL.Services.Interfaces;
 using BookingService.Common.DTOs;
 using BookingService.DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -13,9 +13,9 @@ namespace BookingService.Controllers
     [Authorize(Roles = "Admin")]
     public class StatisticsController : ControllerBase
     {
-        private readonly StatisticsService _statisticsService;
+        private readonly IStatisticsService _statisticsService;
 
-        public StatisticsController(StatisticsService statisticsService)
+        public StatisticsController(IStatisticsService statisticsService)
         {
             _statisticsService = statisticsService;
         }

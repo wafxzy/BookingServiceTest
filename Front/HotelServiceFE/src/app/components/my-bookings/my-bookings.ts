@@ -25,7 +25,6 @@ export class MyBookings implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadBookings();
     
-    // Подписываемся на изменения роута, чтобы обновлять данные при каждом посещении
     this.router.events
       .pipe(
         filter(event => event instanceof NavigationEnd),

@@ -16,5 +16,6 @@ namespace BookingService.BLL.Services.Interfaces
         Task<HotelDto> CreateHotelAsync(CreateHotelDto createHotelDto);
         Task<HotelDto?> UpdateHotelAsync(int id, UpdateHotelDto updateHotelDto);
         Task<bool> DeleteHotelAsync(int id);
+        Task<IEnumerable<HotelDto>> GetAvailableHotelsByCityAsync(string city, DateTime? checkIn = null, DateTime? checkOut = null);
     }
 }

@@ -26,7 +26,6 @@ export class Hotels implements OnInit {
   isLoading: boolean = false;
   errorMessage: string = '';
   
-  // Booking modal
   selectedRoom: Room | null = null;
   showBookingModal: boolean = false;
   bookingData = {
@@ -69,10 +68,8 @@ export class Hotels implements OnInit {
     this.isLoading = true;
     
     if (this.searchCheckIn && this.searchCheckOut) {
-      // Поиск с датами - получаем отели с доступными номерами
       this.searchHotelsWithAvailability();
     } else {
-      // Обычный поиск по городу
       this.hotelService.searchHotelsByCity(this.searchCity).subscribe({
         next: (hotels) => {
           this.filteredHotels = hotels;
@@ -87,7 +84,6 @@ export class Hotels implements OnInit {
   }
 
   private searchHotelsWithAvailability(): void {
-    // Поиск отелей с учетом доступности номеров на указанные даты
     this.hotelService.searchAvailableHotels(this.searchCity, this.searchCheckIn, this.searchCheckOut).subscribe({
       next: (hotels) => {
         this.filteredHotels = hotels;
@@ -154,7 +150,6 @@ export class Hotels implements OnInit {
   }
 
   quickBook(hotel: Hotel): void {
-    // Быстрое бронирование - можно открыть модальное окно с первым доступным номером
     if (hotel.rooms && hotel.rooms.length > 0) {
       const availableRoom = hotel.rooms.find(room => room.isAvailable);
       if (availableRoom) {

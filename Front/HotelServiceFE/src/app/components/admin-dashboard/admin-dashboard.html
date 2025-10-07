@@ -48,7 +48,16 @@
 
     <!-- ВКЛАДКА СТАТИСТИКИ -->
     <div *ngIf="activeTab === 'statistics' && !isLoading">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <!-- Заголовок с кнопкой обновления -->
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-semibold text-gray-900">Статистика</h2>
+        <button (click)="refreshData()" 
+                class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm">
+          🔄 Обновить
+        </button>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <!-- Карточки статистики -->
         <div class="bg-white overflow-hidden shadow rounded-lg">
           <div class="p-5">
@@ -101,61 +110,6 @@
                 </dl>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div class="bg-white overflow-hidden shadow rounded-lg">
-          <div class="p-5">
-            <div class="flex items-center">
-              <div class="flex-shrink-0">
-                <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                </svg>
-              </div>
-              <div class="ml-5 w-0 flex-1">
-                <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Последние бронирования</dt>
-                  <dd class="text-lg font-medium text-gray-900">{{ recentBookings.length || 0 }}</dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Последние бронирования -->
-      <div class="bg-white shadow rounded-lg">
-        <div class="px-4 py-5 sm:p-6">
-          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Последние бронирования</h3>
-          <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Дата</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Пользователь</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Отель</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Номер</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Сумма</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Статус</th>
-                </tr>
-              </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
-                <tr *ngFor="let booking of recentBookings">
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {{ booking.createdAt | date:'dd.MM.yyyy HH:mm' }}
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ booking.userEmail }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ booking.hotelName }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ booking.roomNumber }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ booking.totalPrice | currency:'UAH':'symbol':'1.0-0' }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <span [class]="getStatusColor(BookingStatus[booking.status])" class="inline-flex px-2 py-1 text-xs font-semibold rounded-full">
-                      {{ BookingStatus[booking.status] }}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
           </div>
         </div>
       </div>
